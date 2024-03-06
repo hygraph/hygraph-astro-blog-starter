@@ -1,0 +1,17 @@
+---
+import { SingleNav } from "../../queries/navigations";
+import { client } from "../utils/client";
+const {navId} = Astro.props
+const mainNav = await client.request(SingleNav, {navId})
+const navItems = mainNav.navigation.link
+---
+
+
+{navItems.map((navItem) => {
+  const url = navItem.externalUrl || navItem.page.slug
+  return (
+    <li>
+      <a href={`/pages/${url}`}>{navItem.displayText}</a>
+    </li>
+  )
+})}

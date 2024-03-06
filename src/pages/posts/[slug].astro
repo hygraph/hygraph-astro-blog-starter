@@ -1,0 +1,87 @@
+---
+import Main from "../../layouts/Main.astro";
+import {AllPosts} from '../../../queries/posts'
+import {client} from '../../utils/client'
+import RichText from '../../components/RichText.astro'
+
+export async function getStaticPaths() {
+  const data = await client.request(AllPosts)
+
+  const paths = data.posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+
+  return paths;
+}
+
+const { post } = Astro.props;
+---
+
+<Main title="My Microblog">
+  <article>
+    <header class="pt-6 lg:pb-10">
+      <div class="space-y-1">
+        <div>
+          <h1 class="text-3xl leading-9 font-extrabold text-gray-900 tracking-tight sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
+            {post.title}
+          </h1>
+        </div>
+      </div>
+    </header>
+    <div
+      class="divide-y lg:divide-y-0 divide-gray-200 lg:grid lg:grid-cols-[200px_1fr] gap-x-6 pb-16 lg:pb-20"
+      style={{ gridTemplateRows: 'auto 1fr' }}
+    >
+      <dl class="pt-6 pb-10 lg:pt-0 lg:border-b lg:border-gray-200">
+        {post.author && <dt class="mb-2 text-sm font-medium leading-5">Written by</dt>
+        <dd>
+          <ul class="space-x-8 sm:space-x-12 lg:space-x-0 lg:space-y-8">
+            <li key={post.author.remoteId} class="flex space-x-2">
+              <img
+                  class="w-10 h-10 rounded-full"
+                  src={post.author.picture.url}
+                  width=60
+                  height=60
+                  alt={post.author.name}
+                />
+              <dl class="flex-1 text-sm font-medium leading-5">
+                
+                <dt class="sr-only">Name</dt>
+                <dd class="text-gray-900">{post.author.name}</dd>
+                {post.author.title && (
+                  <>
+                    <dt class="sr-only">Title</dt>
+                    <dd class="text-gray-500">{post.author.title}</dd>
+                  </>
+                )}
+              </dl>
+            </li>
+          </ul>
+        </dd>}
+        <div class="mt-8">
+          <dt class="text-sm font-medium leading-5">Published on</dt>
+          <dd class="text-base leading-6 font-medium text-gray-500">
+            <time dateTime={post.date}>
+              {new Date(post.date).toLocaleDateString('en-us', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </time>
+          </dd>
+        </div>
+      </dl>
+      <div class="prose lg:pb-0 lg:row-span-2">
+        <RichText content={post.content.raw} />
+      </div>
+      <footer class="text-sm font-medium leading-5 divide-y divide-gray-200 lg:col-start-1 lg:row-start-2">
+        <div class="pt-8">
+          <a href="/" class="text-purple-500 hover:text-purple-600">
+            &larr; Back to the blog
+          </a>
+        </div>
+      </footer>
+    </div>
+  </article>
+</Main>

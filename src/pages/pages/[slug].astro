@@ -1,0 +1,45 @@
+---
+import Main from "../../layouts/Main.astro";
+import {AllPages} from '../../../queries/pages'
+import {client} from '../../utils/client'
+import RichText from '../../components/RichText.astro'
+
+export async function getStaticPaths() {
+  const data = await client.request(AllPages)
+
+  const paths = data.pages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }));
+
+  return paths;
+}
+
+const { page } = Astro.props;
+---
+
+<Main title="My Microblog">
+  <article>
+    <header class="pt-6 lg:pb-10">
+      <div class="space-y-1">
+        <div>
+          <h1 class="text-3xl leading-9 font-extrabold text-gray-900 tracking-tight sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
+            {page.title}
+          </h1>
+        </div>
+      </div>
+    </header>
+
+      <div class="prose lg:pb-0 lg:row-span-2">
+        <RichText content={page.content.raw} />
+      </div>
+      <footer class="text-sm font-medium leading-5 divide-y divide-gray-200 lg:col-start-1 lg:row-start-2">
+        <div class="pt-8">
+          <a href="/" class="text-purple-500 hover:text-purple-600">
+            &larr; Back to the blog
+          </a>
+        </div>
+      </footer>
+    </div>
+  </article>
+</Main>
