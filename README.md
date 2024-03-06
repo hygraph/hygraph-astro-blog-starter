@@ -1,7 +1,7 @@
 # hygraph-nextjs-blog-starter
 
 
-> An [Astro.js](httsp://astro.build) starter for creating a basic blog with [Hygraph](https://hygraph.com)
+> An [Astro.js](https://astro.build) starter for creating a basic blog with [Hygraph](https://hygraph.com)
 
 ## Quick start
 
